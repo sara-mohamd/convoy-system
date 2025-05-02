@@ -1,0 +1,34 @@
+{
+  "name": "convoy-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://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@github.com/sara-mohamd/Convoy-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sara-mohamd/Convoy-backend/issues"
+  },
+  "homepage": "https://github.com/sara-mohamd/Convoy-backend#readme",
+  "description": "",
+  "dependencies": {
+    "@auth/express": "^0.10.0",
+    "@prisma/client": "^6.6.0",
+    "cros": "^1.1.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "prisma": "^6.6.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.14.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
