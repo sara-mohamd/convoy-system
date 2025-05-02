@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String               @id@default(uuid())
+  email             String               @unique
+  password          String
+  phoneNumber       String?              @unique
+  isActive          Boolean              @default(false)
+  role              UserRole[]
+  committeeMembers  CommitteeMember[]
+  volunteerApplication  VolunteerApplication[]
+  convoyParticipant ConvoyParticipant[]
+  villageDataRecorded  VillageData[]
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+}
+
+model Role {
+  id                String              @id@default(uuid())
+  name              String              @default("guest")
+  description       String?
+  user              UserRole[]
+  permission        RolePermission[]
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+}
+
+model UserRole {
+  userId              String
+  user                User              @relation(fields: [userId], references: [id])
+  roleId              String
+  role                Role              @relation(fields: [roleId], references: [id])
+  @@unique([userId, roleId])
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+}
+
+model Permission {
+  id                String             @id@default(uuid())
+  name              String             @unique
+  description       String?
+  Role              RolePermission[]    
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+}
+
+model RolePermission {
+  permissionId      String
+  Permission        Permission        @relation(fields: [permissionId], references: [id])
+  roleId            String
+  role              Role              @relation(fields: [roleId], references: [id])
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  @@unique([permissionId, roleId])
+}
+
+model Committee {
+  id                String             @id@default(uuid())
+  name              String             @unique
+  description       String?
+  members           CommitteeMember[]
+  volunteerApplications VolunteerApplication[]
+  convoyParticipant ConvoyParticipant[]
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+}
+
+// Relation M:N between Committee and User models
+model CommitteeMember {
+  userId              String
+  user                User              @relation(fields: [userId], references: [id])
+  committeeId         String
+  committee           Committee         @relation(fields: [committeeId], references: [id])
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  @@unique([userId, committeeId])
+}
+enum UserStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  WAITLISTED
+}
+
+enum ConvoyStatus {
+  PLANNING         // The convoy is being planned (budget, team, schedule, etc.).
+  SCHEDULED        // The convoy is confirmed with a date, team, and budget.
+  IN_PROGRESS      // The convoy is currently active
+  COMPLETED        // The convoy has finished successfully
+  CANCELED         // the convoy was canceled
+  POSTPONED        // The convoy is temporarily delayed but may be rescheduled
+}
+model Convoy {
+  id                String             @id@default(uuid())
+  name              String
+  goals             String
+  requirements      String
+  startDate         DateTime
+  endDate           DateTime?
+  status            ConvoyStatus
+  volunteerApplications         VolunteerApplication[]
+  participant       ConvoyParticipant[]
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+}
+model VolunteerApplication {
+  userId            String
+  user              User                @relation(fields: [userId], references: [id])
+  convoyId          String
+  convoy            Convoy              @relation(fields: [convoyId], references: [id])
+  committeeId       String
+  committee         Committee           @relation(fields: [committeeId], references: [id])
+  status          UserStatus   
+  rejectionReason String?
+  isBlocked       Boolean   @default(false)
+  appliedAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  @@unique([userId, convoyId, committeeId])
+}
+
+enum ConvoyParticipantStatus {
+  ACTIVE
+  INACTIVE
+  CANCELED
+}
+model ConvoyParticipant {
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  convoy      Convoy    @relation(fields: [convoyId], references: [id])
+  convoyId    String
+  committee   Committee @relation(fields: [committeeId], references: [id])
+  committeeId String
+  role        String
+  status      ConvoyParticipantStatus
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([userId, convoyId, committeeId])
+}
+
+model Village {
+  id              String  @id@default(uuid())
+  name            String
+  location        String
+  villageData     VillageData[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model VillageData {
+  id          String   @id@default(uuid())
+  data        Json
+  villageId   String
+  userId      String
+  recordedBy  User    @relation(fields: [userId], references: [id])
+  village     Village @relation(fields: [villageId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
