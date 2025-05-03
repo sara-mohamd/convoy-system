@@ -20,6 +20,8 @@
   "dependencies": {
     "@auth/express": "^0.10.0",
     "@prisma/client": "^6.6.0",
+    "@types/bcrypt": "^5.0.2",
+    "bcrypt": "^5.1.1",
     "cros": "^1.1.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
