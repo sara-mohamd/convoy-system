@@ -2,24 +2,24 @@
 ```
 src/
 ├── modules/
-│   ├── auth/
+│   ├── controllers/
 │   │   ├── auth.controller.ts
-│   │   ├── auth.service.ts
-│   │   ├── auth.routes.ts
-│   │   └── auth.types.ts (or interfaces.ts)
-│   ├── users/
-│   │   └── ... (similar structure)
-│   ├── convoy/
-│   │   └── ...
-│   └── ... (other modules like committee, village)
-├── core/
-│   ├── middleware/
-│   │   ├── auth.middleware.ts
-│   │   └── error.middleware.ts
-│   ├── utils/
+│   │   ├── committee.controller.ts
+│   │   ├── convoy.committe.ts
+│   │   └── role.controllers.ts
+│   ├── router/
+|   |   ├── auth.router.ts
+│   │   ├── committee.router.ts
+│   │   ├── convoy.router.ts
+│   │   └── role.router.ts
+│   ├── middelwares/
+│   │   ├── permissions.middleware.ts
+│   │   └── auth.middleware.ts
+│   │  
+├── utils/
 │   │   └── ... (e.g., password hashing)
-│   └── config/
-│       └── index.ts (for env vars)
+├── config/
+│       └── db.ts
 ├── prisma/
 │   └── prisma/ (output from prisma client)
 ├── app.ts  (Express app configuration, middleware setup)
