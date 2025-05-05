@@ -86,11 +86,6 @@ export const authenticate: RequestHandler = async (req, res, next) => {
       return // Return without a value
     }
 
-    console.log(
-      "Authenticated user: ",
-      JSON.stringify(user)
-    );
-
     // Add user to request
     req.user = user
 
