@@ -29,7 +29,7 @@ model User {
 
 model Role {
   id                String              @id@default(uuid())
-  name              String              @default("guest")
+  name              String              @unique@default("guest")
   description       String?
   user              UserRole[]
   permission        RolePermission[]
