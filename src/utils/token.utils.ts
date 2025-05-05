@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 // import { User } from '../../src/generated';
-import {User} from '@prisma/client'
+import { User } from '@prisma/client'
 import { Request, Response, NextFunction } from 'express'
 
 interface AuthenticatedRequest extends Request {
@@ -11,12 +11,12 @@ export const createJWT = (user: User) => {
   const token = jwt.sign(
     { id: user.id, username: user.username },
     process.env.JWT_SECRET as string,
-    { expiresIn: '1h'}
+    { expiresIn: '1h' }
   )
   return token;
 }
 
-export const  protect= (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const protect = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const bearer = req.headers.authorization
 
   if (!bearer)
@@ -36,7 +36,7 @@ export const  protect= (req: AuthenticatedRequest, res: Response, next: NextFunc
     req.user = user
     next()
 
-  } catch (error){
+  } catch (error) {
     console.log(error)
     res.status(401).json({ message: 'not valid token' })
   }

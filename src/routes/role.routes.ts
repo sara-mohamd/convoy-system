@@ -9,7 +9,7 @@ import {
 } from "../controllers/role.controller"
 import { authenticate } from "../middleware/auth.middleware"
 import { authorize } from "../middleware/permission.middleware"
-import { asHandler } from "../../utils/controller.utils"
+import { asHandler } from "../utils/controller.utils"
 
 const router = express.Router()
 

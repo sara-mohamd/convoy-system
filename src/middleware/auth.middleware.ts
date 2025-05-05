@@ -1,12 +1,32 @@
 import type { RequestHandler } from "express"
 import jwt from "jsonwebtoken"
-import prisma from "../../config/db"
+import prisma from "@/config/db"
 
-// Extend Express Request type to include user
+export type AuthUser = {
+  id: string;
+  username: string;
+  email: string;
+  isActive: boolean;
+  role: {
+    role: {
+      id: string;
+      name: string;
+      description: string | null;
+      permission: {
+        Permission: {
+          name: string;
+          description: string | null;
+        };
+      }[];
+    };
+  }[];
+}
+
+
 declare global {
   namespace Express {
     interface Request {
-      user?: any
+      user?: AuthUser;
     }
   }
 }
@@ -29,22 +49,31 @@ export const authenticate: RequestHandler = async (req, res, next) => {
     // Get user from database
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
-      include: {
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        isActive: true,
         role: {
-          include: {
+          select: {
             role: {
-              include: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
                 permission: {
-                  include: {
-                    Permission: true,
+                  select: {
+                    Permission: {
+                      select: { name: true, description: true },
+                    },
                   },
                 },
-              },
+              }
             },
           },
         },
       },
-    })
+    });
 
     if (!user) {
       res.status(401).json({ error: "User not found" })
@@ -56,6 +85,11 @@ export const authenticate: RequestHandler = async (req, res, next) => {
       res.status(403).json({ error: "Account is not active" })
       return // Return without a value
     }
+
+    console.log(
+      "Authenticated user: ",
+      JSON.stringify(user)
+    );
 
     // Add user to request
     req.user = user

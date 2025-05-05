@@ -1,7 +1,7 @@
-import prisma from "../../config/db"
+import prisma from "../config/db"
 import type { Request, Response, RequestHandler } from "express"
-import { hashPassword, comparePasswords } from "../../utils/password.utils"
-import { createJWT } from "../../utils/token.utils"
+import { hashPassword, comparePasswords } from "../utils/password.utils"
+import { createJWT } from "../utils/token.utils"
 
 interface SignupRequestBody {
   username: string
@@ -24,7 +24,8 @@ export const createNewUser = async (req: Request, res: Response) => {
 
     // Validate required fields
     if (!username || !email || !password) {
-      return res.status(400).json({ error: "Username, email, and password are required" })
+      res.status(400).json({ error: "Username, email, and password are required" })
+      return
     }
 
     // Check if user with email already exists
@@ -33,7 +34,8 @@ export const createNewUser = async (req: Request, res: Response) => {
     })
 
     if (existingUser) {
-      return res.status(409).json({ error: "User with this email already exists" })
+      res.status(409).json({ error: "User with this email already exists" })
+      return
     }
 
     // Check if phone number is provided and if it's already in use
@@ -43,7 +45,8 @@ export const createNewUser = async (req: Request, res: Response) => {
       })
 
       if (existingPhoneNumber) {
-        return res.status(409).json({ error: "Phone number is already in use" })
+        res.status(409).json({ error: "Phone number is already in use" })
+        return
       }
     }
 

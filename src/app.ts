@@ -2,18 +2,16 @@ import express from "express"
 import cors from "cors"
 import helmet from "helmet"
 import morgan from "morgan"
-import dotenv from "dotenv"
-
+import 'dotenv/config'
 // Load environment variables
-dotenv.config()
 
 // Import routes
-import authRoutes from "./modules/routes/auth.routes"
-import roleRoutes from "./modules/routes/role.routes"
-import committeeRoutes from "./modules/routes/committee.routes"
-import volunteerRoutes from "./modules/routes/volunteer.routes"
-import convoyRoutes from "./modules/routes/convoy.routes"
-import villageRoutes from "./modules/routes/village.routes"
+import authRoutes from "./routes/auth.routes"
+import roleRoutes from "./routes/role.routes"
+import committeeRoutes from "./routes/committee.routes"
+import volunteerRoutes from "./routes/volunteer.routes"
+import convoyRoutes from "./routes/convoy.routes"
+import villageRoutes from "./routes/village.routes"
 
 // Initialize express app
 const app = express()

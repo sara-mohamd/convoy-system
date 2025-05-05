@@ -1,0 +1,715 @@
+openapi: 3.0.3
+info:
+  title: Convoy System API
+  version: 1.0.0
+  description: API documentation for the Convoy System
+servers:
+  - url: http://localhost:3000/api
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+paths:
+  /auth/signup:
+    post:
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                phoneNumber:
+                  type: string
+              required: [username, email, password]
+      responses:
+        '201':
+          description: User created
+        '400':
+          description: Bad request
+        '409':
+          description: Conflict
+      security: [] # Public route
+  /auth/signin:
+    post:
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required: [email, password]
+      responses:
+        '200':
+          description: Login successful
+        '401':
+          description: Invalid credentials
+      security: [] # Public route
+  /auth/users/{userId}/activate:
+    patch:
+      summary: Activate a user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User activated
+        '404':
+          description: User not found
+      security:
+        - bearerAuth: []
+  /auth/users/{userId}/role:
+    patch:
+      summary: Change user role
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                roleId:
+                  type: string
+              required: [roleId]
+      responses:
+        '200':
+          description: User role updated
+        '404':
+          description: User or role not found
+      security:
+        - bearerAuth: []
+  /roles:
+    get:
+      summary: List all roles
+      responses:
+        '200':
+          description: List of roles
+      security:
+        - bearerAuth: []
+    post:
+      summary: Create a new role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                permissions:
+                  type: array
+                  items:
+                    type: string
+              required: [name]
+      responses:
+        '201':
+          description: Role created
+      security:
+        - bearerAuth: []
+  /roles/{id}:
+    put:
+      summary: Update a role
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                permissions:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Role updated
+      security:
+        - bearerAuth: []
+    delete:
+      summary: Delete a role
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Role deleted
+      security:
+        - bearerAuth: []
+  /roles/permissions:
+    get:
+      summary: List all permissions
+      responses:
+        '200':
+          description: List of permissions
+      security:
+        - bearerAuth: []
+    post:
+      summary: Create a new permission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+              required: [name]
+      responses:
+        '201':
+          description: Permission created
+      security:
+        - bearerAuth: []
+  /committees:
+    get:
+      summary: List all committees
+      responses:
+        '200':
+          description: List of committees
+      security:
+        - bearerAuth: []
+    post:
+      summary: Create a new committee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                memberIds:
+                  type: array
+                  items:
+                    type: string
+              required: [name]
+      responses:
+        '201':
+          description: Committee created
+      security:
+        - bearerAuth: []
+  /committees/{id}:
+    get:
+      summary: Get committee by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Committee details
+        '404':
+          description: Committee not found
+      security:
+        - bearerAuth: []
+    put:
+      summary: Update a committee
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                memberIds:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Committee updated
+      security:
+        - bearerAuth: []
+  /committees/members:
+    post:
+      summary: Add member to committee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                committeeId:
+                  type: string
+                userId:
+                  type: string
+              required: [committeeId, userId]
+      responses:
+        '201':
+          description: Member added
+      security:
+        - bearerAuth: []
+  /committees/{committeeId}/members/{userId}:
+    delete:
+      summary: Remove member from committee
+      parameters:
+        - in: path
+          name: committeeId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Member removed
+      security:
+        - bearerAuth: []
+  /volunteers:
+    get:
+      summary: List all volunteer applications
+      responses:
+        '200':
+          description: List of applications
+      security:
+        - bearerAuth: []
+    post:
+      summary: Create a volunteer application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                convoyId:
+                  type: string
+                committeeId:
+                  type: string
+              required: [userId, convoyId, committeeId]
+      responses:
+        '201':
+          description: Application created
+      security:
+        - bearerAuth: []
+  /volunteers/user/{userId}:
+    get:
+      summary: Get applications by user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Applications for user
+      security:
+        - bearerAuth: []
+  /volunteers/convoy/{convoyId}:
+    get:
+      summary: Get applications by convoy
+      parameters:
+        - in: path
+          name: convoyId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Applications for convoy
+      security:
+        - bearerAuth: []
+  /volunteers/{userId}/{convoyId}/{committeeId}/status:
+    patch:
+      summary: Update application status
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: convoyId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: committeeId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [PENDING, APPROVED, REJECTED, WAITLISTED]
+                rejectionReason:
+                  type: string
+      responses:
+        '200':
+          description: Application status updated
+      security:
+        - bearerAuth: []
+  /volunteers/{userId}/{convoyId}/{committeeId}/block:
+    patch:
+      summary: Block a volunteer
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: convoyId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: committeeId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Volunteer blocked
+      security:
+        - bearerAuth: []
+  /convoys:
+    get:
+      summary: List all convoys
+      responses:
+        '200':
+          description: List of convoys
+      security:
+        - bearerAuth: []
+    post:
+      summary: Create a new convoy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                goals:
+                  type: string
+                requirements:
+                  type: string
+                startDate:
+                  type: string
+                  format: date-time
+                endDate:
+                  type: string
+                  format: date-time
+                status:
+                  type: string
+                  enum: [PLANNING, SCHEDULED, IN_PROGRESS, COMPLETED, CANCELED, POSTPONED]
+              required: [name, goals, requirements, startDate, status]
+      responses:
+        '201':
+          description: Convoy created
+      security:
+        - bearerAuth: []
+  /convoys/{id}:
+    get:
+      summary: Get convoy by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Convoy details
+        '404':
+          description: Convoy not found
+      security:
+        - bearerAuth: []
+    put:
+      summary: Update a convoy
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                goals:
+                  type: string
+                requirements:
+                  type: string
+                startDate:
+                  type: string
+                  format: date-time
+                endDate:
+                  type: string
+                  format: date-time
+                status:
+                  type: string
+                  enum: [PLANNING, SCHEDULED, IN_PROGRESS, COMPLETED, CANCELED, POSTPONED]
+      responses:
+        '200':
+          description: Convoy updated
+      security:
+        - bearerAuth: []
+  /convoys/participants:
+    post:
+      summary: Add participant to convoy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                convoyId:
+                  type: string
+                userId:
+                  type: string
+                committeeId:
+                  type: string
+                role:
+                  type: string
+              required: [convoyId, userId, committeeId, role]
+      responses:
+        '201':
+          description: Participant added
+      security:
+        - bearerAuth: []
+  /convoys/participants/{id}/status:
+    patch:
+      summary: Update participant status
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [ACTIVE, INACTIVE, CANCELED]
+      responses:
+        '200':
+          description: Participant status updated
+      security:
+        - bearerAuth: []
+  /convoys/participants/{id}:
+    delete:
+      summary: Remove participant from convoy
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Participant removed
+      security:
+        - bearerAuth: []
+  /villages:
+    get:
+      summary: List all villages
+      responses:
+        '200':
+          description: List of villages
+      security:
+        - bearerAuth: []
+    post:
+      summary: Create a new village
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                location:
+                  type: string
+              required: [name, location]
+      responses:
+        '201':
+          description: Village created
+      security:
+        - bearerAuth: []
+  /villages/{id}:
+    get:
+      summary: Get village by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Village details
+        '404':
+          description: Village not found
+      security:
+        - bearerAuth: []
+    put:
+      summary: Update a village
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                location:
+                  type: string
+      responses:
+        '200':
+          description: Village updated
+      security:
+        - bearerAuth: []
+  /villages/data:
+    post:
+      summary: Record village data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                villageId:
+                  type: string
+                userId:
+                  type: string
+                data:
+                  type: object
+              required: [villageId, userId, data]
+      responses:
+        '201':
+          description: Village data recorded
+      security:
+        - bearerAuth: []
+  /villages/data/{id}:
+    get:
+      summary: Get village data by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Village data details
+        '404':
+          description: Village data not found
+      security:
+        - bearerAuth: []
+    put:
+      summary: Update village data
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+      responses:
+        '200':
+          description: Village data updated
+      security:
+        - bearerAuth: []
